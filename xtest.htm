@@ -1,0 +1,89 @@
+<html><head><title>ndp player for html5</title>
+<script src="http://media1.s-nbcnews.com/i/videoassets/staging/ndp/ndpplayer-native.js" type="text/javascript"></script>
+
+
+</head><body>
+
+TEST FOR WEB APP
+
+<div id="mediaImage"></div>
+<div id="mediaTitle"></div>
+<div id="mediaDescription"></div>
+<div id="xboxplayer"></div>
+<script language="javascript">
+//utils
+ function loadData(feedData,callback) {   
+
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', feedData, true); // Replace 'my_data' with the path to your file
+    xobj.onreadystatechange = function () {
+          if (xobj.readyState == 4 && xobj.status == "200") {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            callback(xobj.responseText);
+          }
+    };
+    xobj.send(null);  
+ }
+</script>
+
+
+<script type="text/javascript">
+
+var xplayerdiv=document.getElementById("xboxplayer");
+var xplayer=new NDPPlayer({location:xplayerdiv});
+//var feedPath="http://data.nbcnews.com/drone/api/query/NBCNews/webapp/1.0/playlistbyid?playlistid=nnd_NBCNewsMostViewed";
+//var feedPath="http://feed.theplatform.com/f/2E2eJC/nnd_21427731?range=-10&form=json&pretty=true";
+var feedPath="mostviewed.json";
+var displayData=function(data){
+data=JSON.parse(data);
+
+
+	var entry=data.results[0].video;
+	console.log(entry);
+	var title=entry.title;
+	var desc=entry.description;
+	var thumb=entry.thumbnail;
+	window.mediaAss=entry;
+	console.log(title);
+
+
+/*	
+	for (var m in entry.media$content){
+		if (entry.media$content[m].plfile$format=="MPEG4"){
+		
+			media=entry.media$content[m].plfile$url;
+			window.gmedia=entry.media$content[m];
+			break;
+		}
+	}
+*/
+	
+	var mt=document.getElementById("mediaTitle");
+	var md=document.getElementById("mediaDescription");
+	var mi=document.getElementById("mediaImage");
+
+	mt.innerHTML=title;
+	md.innerHTML=desc;
+	mi.innerHTML="<img src='"+thumb+"' width='250' onclick='playmedia();'/>";
+
+
+
+}
+
+
+
+
+function playmedia(){
+
+var MediaAss=new $ndp.MediaAsset(window.mediaAss);
+
+xplayer.mediaAsset(MediaAss);
+xplayer.play();
+}
+loadData(feedPath,displayData);
+
+
+</script>
+
+</body>
